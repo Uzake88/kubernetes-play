@@ -1,0 +1,23 @@
+#1. Create production namespace
+k create ns production
+
+#2. Create configmap for production
+k create configmap app-config \
+  --from-literal=APP_ENV=production \
+  --namespace=production
+
+#3. Define secrets for the production
+k create secret generic app-secret \
+  --from-literal=DB_PASSWORD=prodpassword123 \
+  --namespace=production
+
+#4. View the secrets and metadata 
+k get secrets -n production
+k describe secret app-secret -n production
+
+#5. Deploy to production environment
+sed -e 's/PLACEHOLDER_NAMESPACE/production/' \
+    -e 's/replicas: .*$/replicas: 3/' app-deployment-template.yaml > production-deployment.yaml
+
+k apply -f production-deployment.yaml
+
